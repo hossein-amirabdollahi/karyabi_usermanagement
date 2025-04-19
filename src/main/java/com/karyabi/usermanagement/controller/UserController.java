@@ -6,6 +6,7 @@ import com.karyabi.usermanagement.dto.UserSaveDTO;
 import com.karyabi.usermanagement.dto.UserUpdateDTO;
 import com.karyabi.usermanagement.entity.User;
 import com.karyabi.usermanagement.service.UserService;
+import jakarta.servlet.ServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,9 +32,24 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-//    @RequestMapping(path = "/update", method = RequestMethod.PUT)
-//    public String updateUser(@RequestBody UserUpdateDTO userUpdateDTO){
-//        publ
-//    }
+    @RequestMapping(path = "/getById/{id}", method = RequestMethod.GET)
+    public UserDTO getUserById(@PathVariable Long id){
+        return userService.getUserById(id);
+    }
+
+    @RequestMapping(path = "/getByUsername/{username}", method = RequestMethod.GET)
+    public UserDTO getUserByUsername(@PathVariable String username){
+        return userService.getUserByUsername(username);
+    }
+
+    @RequestMapping(path = "/update", method = RequestMethod.PUT)
+    public String updateUser(@RequestBody UserUpdateDTO userUpdateDTO){
+        return userService.updateUser(userUpdateDTO);
+    }
+
+    @RequestMapping(path = "/delete/{id}", method = RequestMethod.DELETE)
+    public String deleteUser(@PathVariable Long id, ServletRequest servletRequest){
+        return userService.deleteUser(id);
+    }
 
 }
