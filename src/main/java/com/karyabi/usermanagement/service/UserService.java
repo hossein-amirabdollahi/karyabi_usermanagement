@@ -4,10 +4,11 @@ import com.karyabi.usermanagement.dto.UserDTO;
 import com.karyabi.usermanagement.dto.UserSaveDTO;
 import com.karyabi.usermanagement.dto.UserUpdateDTO;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
-    String addUser(UserSaveDTO userSaveDTO);
+    String addUser(UserSaveDTO userSaveDTO) throws IOException;
 
     List<UserDTO> getAllUsers();
 
@@ -15,7 +16,7 @@ public interface UserService {
 
     UserDTO getUserByUsername(String username);
 
-    String updateUser(UserUpdateDTO userUpdateDTO);
+    String updateUser(UserUpdateDTO userUpdateDTO) throws IOException;
 
     String deleteUser(Long id);
 }

@@ -9,6 +9,7 @@ import com.karyabi.usermanagement.service.UserService;
 import jakarta.servlet.ServletRequest;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/save", method = RequestMethod.POST)
-    public String saveUser(@RequestBody UserSaveDTO userSaveDTO){
+    public String saveUser(@RequestBody UserSaveDTO userSaveDTO) throws IOException {
         return userService.addUser(userSaveDTO);
     }
 
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/update", method = RequestMethod.PUT)
-    public String updateUser(@RequestBody UserUpdateDTO userUpdateDTO){
+    public String updateUser(@RequestBody UserUpdateDTO userUpdateDTO) throws IOException {
         return userService.updateUser(userUpdateDTO);
     }
 

@@ -5,24 +5,27 @@ import com.karyabi.usermanagement.dto.UserSaveDTO;
 import com.karyabi.usermanagement.dto.UserUpdateDTO;
 import com.karyabi.usermanagement.entity.User;
 import com.karyabi.usermanagement.repository.UserRepository;
+import com.karyabi.usermanagement.service.UserFileService;
 import com.karyabi.usermanagement.service.UserService;
 import com.karyabi.usermanagement.util.HashUtil;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class UserServiceIMPL implements UserService {
 
     private final HashUtil hashUtil;
     private final UserRepository userRepository;
+    private final UserFileService userFileService;
 
-    public UserServiceIMPL(UserRepository userRepository, HashUtil hashUtil) {
+    public UserServiceIMPL(UserRepository userRepository, HashUtil hashUtil, UserFileService userFileService) {
         this.userRepository = userRepository;
         this.hashUtil = hashUtil;
+        this.userFileService = userFileService;
     }
 
     private UserDTO mapToDTO(User user){
@@ -38,7 +41,7 @@ public class UserServiceIMPL implements UserService {
     }
 
     @Override
-    public String addUser(UserSaveDTO userSaveDTO) {
+    public String addUser(UserSaveDTO userSaveDTO) throws IOException {
 
         User user = User.builder()
                 .fullName(userSaveDTO.getFullName())
@@ -51,6 +54,9 @@ public class UserServiceIMPL implements UserService {
                 .build();
 
         userRepository.save(user);
+
+        UserDTO userDTO = this.mapToDTO(userRepository.getByUsername(userSaveDTO.getUsername()));
+        userFileService.writerUserToFile(userDTO);
 
         return "User with username:{ " + user.getUsername() + " } registered successfully";
     }
@@ -88,7 +94,7 @@ public class UserServiceIMPL implements UserService {
     }
 
     @Override
-    public String updateUser(UserUpdateDTO userUpdateDTO) {
+    public String updateUser(UserUpdateDTO userUpdateDTO) throws IOException {
         if (!userRepository.existsById(userUpdateDTO.getId())){
             return "User not found with ID: " + userUpdateDTO.getId();
         }else {
@@ -100,6 +106,10 @@ public class UserServiceIMPL implements UserService {
             user.setAddress(userUpdateDTO.getAddress());
             user.setRole(userUpdateDTO.getRole());
             userRepository.save(user);
+
+            UserDTO userDTO = this.mapToDTO(user);
+            userFileService.writerUserToFile(userDTO);
+
             return userUpdateDTO.getUsername();
         }
     }
@@ -108,7 +118,13 @@ public class UserServiceIMPL implements UserService {
     public String deleteUser(Long id) {
         if(!userRepository.existsById(id))
             return "User not found with ID: " + id;
+
+        String username = userRepository.getById(id).getUsername();
+        userFileService.deleteUserFile(username);
+
         userRepository.deleteById(id);
+
+
         return "User with ID:{ "+ id+ " } delete successfully.";
     }
 }
